@@ -1472,6 +1472,10 @@ class HexProcessorBuildings {
             },
         });
         mod.modInterface.extendClass(MetaCutterBuilding, ({ $old }) => ({
+            getAvailableVariants(root) {
+                return $old.getAvailableVariants.bind(this)(root)
+                    .filter(variant => variant !== enumCutterVariants.quad);
+            },
             updateVariants(entity, rotationVariant, variant) {
                 if (variant !== HEX_BUILDING_VARIANT)
                     return $old.updateVariants.bind(this)(entity, rotationVariant, variant);
@@ -1502,6 +1506,10 @@ class HexProcessorBuildings {
             },
         });
         mod.modInterface.extendClass(MetaPainterBuilding, ({ $old }) => ({
+            getAvailableVariants(root) {
+                return $old.getAvailableVariants.bind(this)(root)
+                    .filter(variant => variant !== enumPainterVariants.quad);
+            },
             updateVariants(entity, rotationVariant, variant) {
                 if (variant !== HEX_BUILDING_VARIANT)
                     return $old.updateVariants.bind(this)(entity, rotationVariant, variant);
