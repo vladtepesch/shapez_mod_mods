@@ -1659,10 +1659,10 @@ class HexProcessorBuildings {
 
 const METADATA = {
     "id": "hexagonal",
-    "version": "1.3.0",
+    "version": "1.5.0",
     "name": "hexagonal",
-    "author": "Dimava",
-    "description": "Hexagonal shapes",
+    "author": "Dimava, Vlad_Tepesch",
+    "description": "Hexagonal shapes extended",
     "website": "",
     "settings": {},
 };
