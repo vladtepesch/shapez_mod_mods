@@ -1064,6 +1064,32 @@ class SzDefinition extends BasicSerializableObject {
                     return def.compute_ANALYZE(this.root);
                 }
                 return $old.compute_ANALYZE.call(this, parameters);
+            },
+            compute_UNSTACK(parameters) {
+                const item = parameters[0];
+                if (!item || item.getItemType() !== "shape" || !(item.definition instanceof SzDefinition)) {
+                    return $old.compute_UNSTACK.call(this, parameters);
+                }
+
+                const layers = item.definition.layers;
+                if (layers.length === 0) {
+                    return [null, null];
+                }
+
+                const upperDefinition = new SzDefinition({
+                    layers: [layers[layers.length - 1]],
+                });
+                const lowerLayers = layers.slice(0, -1);
+                const lowerDefinition = lowerLayers.length
+                    ? new SzDefinition({ layers: lowerLayers })
+                    : null;
+
+                return [
+                    lowerDefinition
+                        ? this.root.shapeDefinitionMgr.getShapeItemFromDefinition(lowerDefinition)
+                        : null,
+                    this.root.shapeDefinitionMgr.getShapeItemFromDefinition(upperDefinition),
+                ];
             }
         }));
     }
@@ -1659,7 +1685,7 @@ class HexProcessorBuildings {
 
 const METADATA = {
     "id": "hexagonal",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "name": "hexagonal",
     "author": "Dimava, Vlad_Tepesch",
     "description": "Hexagonal shapes extended",
