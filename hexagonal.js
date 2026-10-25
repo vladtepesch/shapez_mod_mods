@@ -1454,6 +1454,14 @@ class HexProcessorBuildings {
         MOD_ITEM_PROCESSOR_SPEEDS[HEX_PAINTER_PROCESSOR] = root =>
             root.hubGoals.getProcessorBaseSpeed(enumItemProcessorTypes.painterQuad);
 
+        mod.modInterface.registerCss(
+            '#ingame_HUD_PlacerVariants .variants .variant .iconWrap[data-tile-w="6"] {' +
+            ' width: $scaled(150px) !important;' +
+            ' min-width: $scaled(150px) !important;' +
+            ' flex: 0 0 $scaled(150px) !important;' +
+            '}'
+        );
+
         mod.modInterface.addVariantToExistingBuilding(MetaCutterBuilding, HEX_BUILDING_VARIANT, {
             rotationVariants: [0],
             dimensions: new Vector(6, 1),
@@ -1499,7 +1507,7 @@ class HexProcessorBuildings {
                     return [];
                 const speed = root.hubGoals.getProcessorBaseSpeed(HEX_PAINTER_PROCESSOR);
                 return [[T.ingame.buildingPlacement.infoTexts.speed, formatItemsPerSecond(speed)]];
-            },
+            },  
             isUnlocked(root) {
                 return root.hubGoals.isRewardUnlocked(enumHubGoalRewards.reward_wires_painter_and_levers) &&
                     root.gameMode.getSupportsWires();
