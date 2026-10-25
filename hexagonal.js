@@ -947,6 +947,111 @@ class SzDefinition extends BasicSerializableObject {
                 }
             }
         }));
+        mod.modInterface.registerCss(`
+            #ingame_HUD_ShapeViewer .content[data-sectors="6"] .layer .quad {
+                width: 33.333%;
+                height: 50%;
+                padding: 4px;
+                left: auto;
+                right: auto;
+                top: auto;
+                bottom: auto;
+            }
+            #ingame_HUD_ShapeViewer .content[data-sectors="6"] .layer .quad::after {
+                display: none;
+            }
+            #ingame_HUD_ShapeViewer .content[data-sectors="6"] .layer .quad-0 {
+                left: 45%;
+                top: 10%;
+                align-items: flex-start;
+                justify-content: flex-end;
+            }
+            #ingame_HUD_ShapeViewer .content[data-sectors="6"] .layer .quad-1 {
+                left: 60%;
+                top: 40%;
+                align-items: flex-start;
+                justify-content: flex-end;
+            }
+            #ingame_HUD_ShapeViewer .content[data-sectors="6"] .layer .quad-2 {
+                left: 45%;
+                top: 75%;
+                align-items: flex-start;
+                justify-content: flex-end;
+            }
+            #ingame_HUD_ShapeViewer .content[data-sectors="6"] .layer .quad-3 {
+                right: 45%;
+                top: 75%;
+                align-items: flex-start;
+                justify-content: flex-start;
+            }
+            #ingame_HUD_ShapeViewer .content[data-sectors="6"] .layer .quad-4 {
+                right: 60%;
+                top: 40%;
+                align-items: flex-start;
+                justify-content: flex-start;
+            }
+            #ingame_HUD_ShapeViewer .content[data-sectors="6"] .layer .quad-5 {
+                right: 45%;
+                top: 10%;
+                align-items: flex-start;
+                justify-content: flex-start;
+            }
+        `);
+        mod.modInterface.extendClass(HUDShapeViewer, ({ $old }) => ({
+            renderForShape(definition) {
+                if (!(definition instanceof SzDefinition)) {
+                    this.contentDiv.removeAttribute("data-sectors");
+                    return $old.renderForShape.call(this, definition);
+                }
+
+                this.visible = true;
+                this.root.app.inputMgr.makeSureAttachedAndOnTop(this.inputReciever);
+                removeAllChildren(this.renderArea);
+                this.currentShapeKey = definition.getHash();
+
+                const layers = definition.layers;
+                this.contentDiv.setAttribute("data-layers", layers.length);
+                this.contentDiv.setAttribute("data-sectors", "6");
+
+                for (let i = layers.length - 1; i >= 0; --i) {
+                    const layerElem = makeDiv(this.renderArea, null, ["layer", "layer-" + i]);
+                    const previewLayers = Array.from({ length: i }, () => ({ quads: [] }));
+                    previewLayers.push(layers[i]);
+                    const previewDefinition = new SzDefinition({ layers: previewLayers });
+                    layerElem.appendChild(previewDefinition.generateAsCanvas(160));
+
+                    for (let sector = 0; sector < 6; ++sector) {
+                        const sectorElem = makeDiv(layerElem, null, ["quad", "quad-" + sector]);
+                        const sectorStart = sector * 4;
+                        const colors = [
+                            ...new Set(
+                                layers[i].quads
+                                    .filter(quad =>
+                                        [-24, 0, 24].some(
+                                            offset =>
+                                                quad.from + offset < sectorStart + 4 &&
+                                                quad.to + offset > sectorStart
+                                        )
+                                    )
+                                    .map(quad => quad.color)
+                            ),
+                        ];
+
+                        if (colors.length) {
+                            const labels = colors.map(color => T.ingame.colors[color] || color);
+                            makeDiv(sectorElem, null, ["colorLabel"], labels.join(" / "));
+                        } else {
+                            makeDiv(
+                                sectorElem,
+                                null,
+                                ["emptyLabel"],
+                                T.ingame.shapeViewer.empty
+                            );
+                        }
+                    }
+                }
+            },
+        }));
         mod.modInterface.extendClass(LogicGateSystem, ({ $old }) => ({
             compute_ANALYZE(parameters) {
                 let item = parameters[0];
