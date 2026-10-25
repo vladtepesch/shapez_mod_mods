@@ -282,20 +282,29 @@ class Mod extends shapez.Mod {
 	}
 
 	validateSignalCode(code) {
-		return typeof code === "string" && /^[CRSW\-]{4}$/i.test(code);
+		return typeof code === "string" && (/^[CRSW\-]{4}$/i.test(code) || /^6[CRSW\-]{6}$/i.test(code));
 	}
 
 	getPermutatedCodes(code) {
 		if (!this.validateSignalCode(code)) {
 			return [];
 		}
+    const permutations = [];
+    if (code.startsWith('6')){
+      code = code.substring(1);
+      const chars = code.toUpperCase().split("");
+      for (let i = 0; i < 6; i++) {
+        permutations.push('6' + chars.join(""));
+        chars.unshift(chars.pop());
+      }
+    } else {
+      const chars = code.toUpperCase().split("");
+      for (let i = 0; i < 6; i++) {
+        permutations.push(chars.join(""));
+        chars.unshift(chars.pop());
+      }
+    }
 
-		const chars = code.toUpperCase().split("");
-		const permutations = [];
-		for (let i = 0; i < 4; i++) {
-			permutations.push(chars.join(""));
-			chars.unshift(chars.pop());
-		}
 		return permutations.filter((value, index, array) => array.indexOf(value) === index);
 	}
 
@@ -304,11 +313,18 @@ class Mod extends shapez.Mod {
 	}
 
 	shapeCodeToRegex(code) {
-		const pattern = code
+    let normCode = code;
+    if (code.startsWith('6')){
+      normCode = code.substring(1);
+    }
+		let pattern = normCode
 			.toUpperCase()
 			.split("")
 			.map(char => char === "-" ? ".u" : char + "u")
 			.join("");
+    if (code.startsWith('6')){
+      pattern = '6' + pattern;
+    }
 		return new RegExp("^" + pattern + "$");
 	}
 
