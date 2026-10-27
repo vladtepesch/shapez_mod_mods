@@ -3,7 +3,7 @@ const METADATA = {
 	website: "https://cable.ayra.ch",
 	author: "AyrA; MeLT",
 	name: "findshape2",
-	version: "15",
+	version: "15.2",
 	id: "findshape2",
 	description: "Searches map chunks for shapes, supports Find Next navigation, and can experimentally skip mined clusters",
 	minimumGameVersion: ">=1.5.0",
@@ -299,7 +299,7 @@ class Mod extends shapez.Mod {
       }
     } else {
       const chars = code.toUpperCase().split("");
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 4; i++) {
         permutations.push(chars.join(""));
         chars.unshift(chars.pop());
       }
