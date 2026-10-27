@@ -1209,7 +1209,7 @@ class SzLevel {
             .replace(/[ab]/g, () => choice(extraColors));
         /** @type {ShapestLayer[]} */
         let layers = [];
-        for (let layerIndex = 0; layerIndex <= layerCount; layerIndex++) {
+        for (let layerIndex = 0; layerIndex < layerCount; layerIndex++) {
             const quads = Array(6).fill('').map(() => choice(shapes) + choice(colors));
             if (allowHoles) {
                 quads[+choice('012345')] = '--';
@@ -1695,7 +1695,7 @@ class HexProcessorBuildings {
 
 const METADATA = {
     "id": "hexagonal",
-    "version": "1.5.2",
+    "version": "1.5.3",
     "name": "hexagonal",
     "author": "Dimava, Vlad_Tepesch",
     "description": "Hexagonal shapes extended",
