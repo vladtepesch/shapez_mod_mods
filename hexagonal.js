@@ -1095,6 +1095,7 @@ class SzDefinition extends BasicSerializableObject {
     }
 }
 
+const FREEPLAY_ALLOW_FLOATING = false;
 class SzLevel {
     index;
     shapeName;
@@ -1213,13 +1214,22 @@ class SzLevel {
             if (allowHoles) {
                 quads[+choice('012345')] = '--';
             }
-            // const layer = new Shape6Layer('6' + symmetry.replace(/\d/g, n => quads[+n]), layerIndex);
-            // if (!allowUnstackable && layers.length && layer.can_fall_through(layers[layers.length - 1])) {
-            // 	layerIndex--;
-            // } else {
-            // 	layers.push(layer);
-            // }
-            layers.push('6' + symmetry.replace(/\d/g, n => quads[+n]));
+            let layerHash = '6' + symmetry.replace(/\d/g, n => quads[+n]);
+            if (!FREEPLAY_ALLOW_FLOATING && layers.length > 0) {
+                const currentSectors = layerHash.slice(1).match(/../g);
+                const supportSectors = layers[layers.length - 1].slice(1).match(/../g);
+                for (let rotation = 0; rotation < currentSectors.length; rotation++) {
+                    if (currentSectors.some((sector, index) =>
+                        sector !== '--' && supportSectors[index] !== '--'
+                    )) {
+                        break;
+                    }
+                    currentSectors.unshift(currentSectors.pop());
+                }
+                layerHash = '6' + currentSectors.join('');
+            }
+
+            layers.push(layerHash);
         }
         return SzDefinition.fromShortKey(layers.join(':'));
     }
@@ -1685,7 +1695,7 @@ class HexProcessorBuildings {
 
 const METADATA = {
     "id": "hexagonal",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "name": "hexagonal",
     "author": "Dimava, Vlad_Tepesch",
     "description": "Hexagonal shapes extended",
